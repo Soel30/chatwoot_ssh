@@ -339,9 +339,9 @@ function setup_chatwoot() {
   rvm install "ruby-3.2.2"
   rvm use 3.2.2 --default
 
-  git clone https://github.com/Teknologi-Digital-Terdepan/livechat-chatwoot.git chatwoot
-  cd chatwoot
-  git checkout "$BRANCH"
+  git clone https://github.com/Teknologi-Digital-Terdepan/livechat-chatwoot.git
+  cd livechat-chatwoot
+  git checkout "development"
   bundle
   yarn
 
@@ -369,7 +369,7 @@ EOF
 ##############################################################################
 function run_db_migrations(){
   sudo -i -u chatwoot << EOF
-  cd chatwoot
+  cd livechat-chatwoot
   RAILS_ENV=production POSTGRES_STATEMENT_TIMEOUT=600s bundle exec rails db:chatwoot_prepare
 EOF
 }
@@ -422,7 +422,7 @@ function setup_ssl() {
   ln -s /etc/nginx/sites-available/nginx_chatwoot.conf /etc/nginx/sites-enabled/nginx_chatwoot.conf
   systemctl restart nginx
   sudo -i -u chatwoot << EOF
-  cd chatwoot
+  cd livechat-chatwoot
   sed -i "s/http:\/\/0.0.0.0:3000/https:\/\/$domain_name/g" .env
 EOF
   systemctl restart chatwoot.target
@@ -603,7 +603,7 @@ exit 0
 #   None
 ##############################################################################
 function get_console() {
-  sudo -i -u chatwoot bash -c " cd chatwoot && RAILS_ENV=production bundle exec rails c"
+  sudo -i -u chatwoot bash -c " cd livechat-chatwoot && RAILS_ENV=production bundle exec rails c"
 }
 
 ##############################################################################
@@ -705,7 +705,7 @@ function ssl() {
 ##############################################################################
 function upgrade_prereq() {
   sudo -i -u chatwoot << "EOF"
-  cd chatwoot
+  cd livechat-chatwoot
   git update-index --refresh
   git diff-index --quiet HEAD --
   if [ "$?" -eq 1 ]; then
@@ -813,7 +813,7 @@ function upgrade() {
   sudo -i -u chatwoot << "EOF"
 
   # Navigate to the Chatwoot directory
-  cd chatwoot
+  cd livechat-chatwoot
 
   # Pull the latest version of the master branch
   git checkout master && git pull
@@ -926,7 +926,7 @@ function get_installation_identifier() {
   local installation_identifier
 
   installation_identifier=$(sudo -i -u chatwoot << "EOF"
-  cd chatwoot
+  cd livechat-chatwoot
   RAILS_ENV=production bundle exec rake instance_id:get_installation_identifier
 EOF
 )
